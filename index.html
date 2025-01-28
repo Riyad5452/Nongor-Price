@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Tag with QR/Barcode</title>
+    <title>QR/Barcode Generator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,47 +15,22 @@
             background-color: #f9f9f9;
             margin: 0;
         }
-        .product-tag {
-            width: 300px;
-            padding: 15px;
-            border: 2px solid gold;
-            border-radius: 10px;
-            background: white;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-        .product-name {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        .price {
-            font-size: 24px;
-            font-weight: bold;
-            color: #d9534f;
-        }
-        .currency {
-            font-size: 18px;
-            font-weight: normal;
-            color: #666;
-        }
         .form-container {
             width: 300px;
+            text-align: center;
         }
         .form-container input, 
         .form-container select {
             width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
+            padding: 10px;
+            margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 14px;
         }
         .form-container button {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             background-color: gold;
             border: none;
             border-radius: 5px;
@@ -75,59 +50,40 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode"></script>
 </head>
 <body>
-    <div class="product-tag" id="productTag">
-        <div class="product-name" id="productName">Luxury Face Cream</div>
-        <div class="price">
-            <span class="currency">৳</span><span id="productPrice">1680</span>
-        </div>
-    </div>
-    
     <div class="form-container">
-        <input type="text" id="inputName" placeholder="Enter Product Name">
-        <input type="number" id="inputPrice" placeholder="Enter Price">
-        <select id="fontStyle">
-            <option value="Arial, sans-serif">Arial</option>
-            <option value="'Courier New', Courier, monospace">Courier New</option>
-            <option value="Georgia, serif">Georgia</option>
-            <option value="'Times New Roman', Times, serif">Times New Roman</option>
-            <option value="Verdana, sans-serif">Verdana</option>
-        </select>
+        <input type="text" id="inputData" placeholder="Enter data for QR/Barcode">
         <select id="codeType">
             <option value="QR">QR Code</option>
             <option value="Barcode">Barcode</option>
         </select>
-        <button onclick="updateProductTag()">Update & Generate</button>
+        <button onclick="generateCode()">Generate</button>
     </div>
 
     <div id="qrcode"></div>
     <svg id="barcode"></svg>
 
     <script>
-        function updateProductTag() {
-            const name = document.getElementById('inputName').value;
-            const price = document.getElementById('inputPrice').value;
-            const fontStyle = document.getElementById('fontStyle').value;
+        function generateCode() {
+            const data = document.getElementById('inputData').value;
             const codeType = document.getElementById('codeType').value;
 
-            // Update product tag
-            if (name) {
-                document.getElementById('productName').textContent = name;
-            }
-            if (price) {
-                document.getElementById('productPrice').textContent = price;
-            }
-            document.getElementById('productTag').style.fontFamily = fontStyle;
-
-            // Generate QR Code or Barcode
-            const content = `Product: ${name || 'Luxury Face Cream'}, Price: ৳${price || '1680'}`;
+            // Clear previous codes
             document.getElementById('qrcode').innerHTML = '';
             document.getElementById('barcode').innerHTML = '';
+
+            if (!data) {
+                alert("Please enter data to generate a code.");
+                return;
+            }
+
             if (codeType === 'QR') {
-                QRCode.toCanvas(document.getElementById('qrcode'), content, function (error) {
+                // Generate QR Code
+                QRCode.toCanvas(document.getElementById('qrcode'), data, function (error) {
                     if (error) console.error(error);
                 });
             } else if (codeType === 'Barcode') {
-                JsBarcode("#barcode", price || "1680", {
+                // Generate Barcode
+                JsBarcode("#barcode", data, {
                     format: "CODE128",
                     lineColor: "#000",
                     width: 2,
