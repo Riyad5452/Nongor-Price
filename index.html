@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Tag</title>
+    <title>Product Tag with QR/Barcode</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -67,7 +67,12 @@
         .form-container button:hover {
             background-color: #f0c040;
         }
+        #qrcode, #barcode {
+            margin-top: 20px;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode"></script>
 </head>
 <body>
     <div class="product-tag" id="productTag">
@@ -87,15 +92,24 @@
             <option value="'Times New Roman', Times, serif">Times New Roman</option>
             <option value="Verdana, sans-serif">Verdana</option>
         </select>
-        <button onclick="updateProductTag()">Update Product Tag</button>
+        <select id="codeType">
+            <option value="QR">QR Code</option>
+            <option value="Barcode">Barcode</option>
+        </select>
+        <button onclick="updateProductTag()">Update & Generate</button>
     </div>
+
+    <div id="qrcode"></div>
+    <svg id="barcode"></svg>
 
     <script>
         function updateProductTag() {
             const name = document.getElementById('inputName').value;
             const price = document.getElementById('inputPrice').value;
             const fontStyle = document.getElementById('fontStyle').value;
+            const codeType = document.getElementById('codeType').value;
 
+            // Update product tag
             if (name) {
                 document.getElementById('productName').textContent = name;
             }
@@ -103,6 +117,24 @@
                 document.getElementById('productPrice').textContent = price;
             }
             document.getElementById('productTag').style.fontFamily = fontStyle;
+
+            // Generate QR Code or Barcode
+            const content = `Product: ${name || 'Luxury Face Cream'}, Price: ৳${price || '1680'}`;
+            document.getElementById('qrcode').innerHTML = '';
+            document.getElementById('barcode').innerHTML = '';
+            if (codeType === 'QR') {
+                QRCode.toCanvas(document.getElementById('qrcode'), content, function (error) {
+                    if (error) console.error(error);
+                });
+            } else if (codeType === 'Barcode') {
+                JsBarcode("#barcode", price || "1680", {
+                    format: "CODE128",
+                    lineColor: "#000",
+                    width: 2,
+                    height: 50,
+                    displayValue: true
+                });
+            }
         }
     </script>
 </body>
